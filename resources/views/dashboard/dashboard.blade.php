@@ -2,7 +2,7 @@
 
 @section('content')
     <style>
-        .logout{
+        .logout {
             position: absolute;
             color: white;
             font-size: 40px;
@@ -10,7 +10,7 @@
             right: 8px;
         }
 
-        .logout:hover{
+        .logout:hover {
             color: white;
         }
     </style>
@@ -39,8 +39,12 @@
             </div>
             <div id="user-info">
                 <h2 id="user-name">{{ Auth::guard('karyawan')->user()->nama_lengkap }}</h2>
-                <span id="user-role"
-                    style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; margin-top: 5px; line-height: 1.2;">{{ Auth::guard('karyawan')->user()->jabatan }}</span>
+                <span id="user-role">
+                    {{ Auth::guard('karyawan')->user()->jabatan }}
+                </span>
+                <span id="user-role">
+                    ({{ Auth::guard('karyawan')->user()->kode_cabang }})
+                </span>
             </div>
         </div>
     </div>

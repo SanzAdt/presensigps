@@ -14,7 +14,7 @@ class DepartemenController extends Controller
         $nama_dept = $request->nama_dept;
         $query = Departemen::query();
         $query->select('*');
-        if(!empty($nama_dept)) {
+        if (!empty($nama_dept)) {
             $query->where('nama_dept',  'like', '%' . $nama_dept . '%');
         }
         $departemen = $query->get();
@@ -31,6 +31,13 @@ class DepartemenController extends Controller
             'nama_dept' => $nama_dept,
         ];
 
+        $cek = DB::table('department')
+            ->where('kode_dept', $kode_dept)
+            ->count();
+        if($cek>0) {
+            return Redirect::back()->with(['warning'=>'Data Dengan Kode Dept. ' . $kode_dept . ' Sudah Ada']);
+        }
+
         $simpan = DB::table('department')->insert($data);
         if ($simpan) {
             return Redirect::back()->with(['success' => 'Data Berhasil Disimpan']);
@@ -39,13 +46,15 @@ class DepartemenController extends Controller
         }
     }
 
-    public function edit(Request $request){
+    public function edit(Request $request)
+    {
         $kode_dept = $request->kode_dept;
         $departemen = DB::table('department')->where('kode_dept', $kode_dept)->first();
         return view('departement.edit', compact('departemen'));
     }
 
-    public function update($kode_dept, Request $request) {
+    public function update($kode_dept, Request $request)
+    {
         $nama_dept = $request->nama_dept;
         $data = [
             'nama_dept' => $nama_dept,
@@ -54,16 +63,17 @@ class DepartemenController extends Controller
         $update =  DB::table('department')->where('kode_dept', $kode_dept)->update($data);
         if ($update) {
             return Redirect::back()->with(['success' => 'Data Berhasil Diupdate']);
-        }  else {
+        } else {
             return Redirect::back()->with(['warning' => 'Data Gagal Diupdate']);
         }
     }
 
-    public function delete($kode_dept){
+    public function delete($kode_dept)
+    {
         $hapus = DB::table('department')->where('kode_dept', $kode_dept)->delete();
         if ($hapus) {
             return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
-        }  else {
+        } else {
             return Redirect::back()->with(['warning' => 'Data Gagal Dihapus']);
         }
     }

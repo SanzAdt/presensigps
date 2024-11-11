@@ -28,7 +28,10 @@ class KaryawanController extends Controller
         $karyawan->appends($request->all());
 
         $department = DB::table('department')->get();
-        return view('karyawan.index', compact('karyawan', 'department'));
+        $cabang = DB::table('cabang')
+            ->orderBy('kode_cabang')
+            ->get();
+        return view('karyawan.index', compact('karyawan', 'department', 'cabang'));
     }
 
     public function store(Request $request)
@@ -39,6 +42,7 @@ class KaryawanController extends Controller
         $no_hp = $request->no_hp;
         $kode_dept = $request->kode_dept;
         $password = Hash::make('1');
+        $kode_cabang = $request->kode_cabang;
 
         if ($request->hasFile('foto')) {
             $foto = $nis . "." . $request->file('foto')->getClientOriginalExtension();
@@ -55,6 +59,7 @@ class KaryawanController extends Controller
                 'kode_dept' => $kode_dept,
                 'foto' => $foto,
                 'password' => $password,
+                'kode_cabang' => $kode_cabang
             ];
             $simpan = DB::table('karyawan')->insert($data);
             if ($simpan) {
@@ -66,8 +71,11 @@ class KaryawanController extends Controller
                 return Redirect::back()->with(['success' => 'Data Berhasil Di Simpan']);
             }
         } catch (\Exception $e) {
-            // dd($e);
-            return Redirect::back()->with(['warning' => 'Data Gagal Di Simpan']);
+            // dd($e->getCode());
+            if ($e->getCode() == 23000) {
+                $message = "Data dengan NIS " . $nis . " Sudah Ada";
+            }
+            return Redirect::back()->with(['warning' => 'Data Gagal Di Simpan ' . $message]);
         }
     }
 
@@ -76,15 +84,20 @@ class KaryawanController extends Controller
         $nis = $request->nis;
         $department = DB::table('department')->get();
         $karyawan = DB::table('karyawan')->where('nis', $nis)->first();
-        return view('karyawan.edit', compact('department', 'karyawan'));
+        $cabang = DB::table('cabang')
+            ->orderBy('kode_cabang')
+            ->get();
+        return view('karyawan.edit', compact('department', 'karyawan', 'cabang'));
     }
 
-    public function update($nis, Request $request){
+    public function update($nis, Request $request)
+    {
         $nis = $request->nis;
         $nama_lengkap = $request->nama_lengkap;
         $jabatan = $request->jabatan;
         $no_hp = $request->no_hp;
         $kode_dept = $request->kode_dept;
+        $kode_cabang = $request->kode_cabang;
         $password = Hash::make('1');
         $old_foto = $request->old_foto;
         if ($request->hasFile('foto')) {
@@ -101,6 +114,7 @@ class KaryawanController extends Controller
                 'kode_dept' => $kode_dept,
                 'foto' => $foto,
                 'password' => $password,
+                'kode_cabang' => $kode_cabang,
             ];
             $update = DB::table('karyawan')->where('nis', $nis)->update($data);
             if ($update) {
@@ -119,12 +133,13 @@ class KaryawanController extends Controller
         }
     }
 
-    public function delete($nis) {
+    public function delete($nis)
+    {
         $delete = DB::table('karyawan')->where('nis', $nis)->delete();
-        if($delete){
-            return Redirect::back()->with(['success'=>'Data Berhasil Di Hapus']);
+        if ($delete) {
+            return Redirect::back()->with(['success' => 'Data Berhasil Di Hapus']);
         } else {
-            return Redirect::back()->with(['warning'=>'Data Gagal Di Hapus']);
+            return Redirect::back()->with(['warning' => 'Data Gagal Di Hapus']);
         }
     }
 }
