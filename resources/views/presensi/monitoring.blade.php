@@ -51,7 +51,8 @@
                                                 <th>No.</th>
                                                 <th>NIS</th>
                                                 <th>Nama Karyawan</th>
-                                                <th>Departemen</th>
+                                                <th>Dept</th>
+                                                <th>Jadwal</th>
                                                 <th>Jam Masuk</th>
                                                 <th>Foto</th>
                                                 <th>Jam Pulang</th>

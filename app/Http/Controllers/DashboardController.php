@@ -21,6 +21,7 @@ class DashboardController extends Controller
             ->first();
 
         $historybulanini = DB::table('presensi')
+        ->leftJoin('jam_kerja', 'presensi.kode_jam_kerja', '=', 'jam_kerja.kode_jam_kerja')
             ->where('nis', $nis)
             ->whereRaw('MONTH(tgl_presensi)="' . $bulanini . '"')
             ->whereRaw('YEAR(tgl_presensi)="' . $tahunini . '"')
@@ -28,7 +29,8 @@ class DashboardController extends Controller
             ->get();
 
         $rekappresensi = DB::table('presensi')
-            ->selectRaw('COUNT(nis) as jmlhadir, SUM(IF(jam_in > "07:00", 1, 0)) as jmlterlambat') // Menggunakan format waktu yang benar
+            ->selectRaw('COUNT(nis) as jmlhadir, SUM(IF(jam_in > jam_masuk, 1, 0)) as jmlterlambat') // Menggunakan format waktu yang benar
+            ->leftJoin('jam_kerja', 'presensi.kode_jam_kerja', '=', 'jam_kerja.kode_jam_kerja')
             ->where('nis', $nis)
             ->whereRaw('MONTH(tgl_presensi)="' . $bulanini . '"')
             ->whereRaw('YEAR(tgl_presensi)="' . $tahunini . '"')
